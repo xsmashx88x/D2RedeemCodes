@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DESTINY 2 // GUARDIAN KIOSK TERMINAL</title>
+  
+  <!-- Destiny 2 Font Inspirations -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #080a0f;
+      --panel-bg: rgba(14, 18, 26, 0.88);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --panel-hover: rgba(26, 34, 48, 0.95);
+      --d2-amber: #e5a93c;
+      --d2-amber-glow: rgba(229, 169, 60, 0.35);
+      --d2-cyan: #00f0ff;
+      --d2-blue: #4a9eff;
+      --d2-exotic: #ceae33;
+      --d2-legendary: #9c67d6;
+      --d2-claimed: #10b981;
+      --text-main: #f0f2f5;
+      --text-muted: #8a96a8;
+      --font-display: 'Rajdhani', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-ui: 'Chakra Petch', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(229, 169, 60, 0.08), transparent 60%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      color: var(--text-main);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: " ";
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.0;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 80px 20px;
+    }
+
+    /* HEADER */
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .tricorn-icon {
+      width: 48px;
+      height: 48px;
+      fill: var(--d2-amber);
+      filter: drop-shadow(0 0 12px var(--d2-amber-glow));
+    }
+
+    .title-group h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      line-height: 1.1;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-group h1 span {
+      color: var(--d2-amber);
+    }
+
+    .title-group p {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ACTION BUTTONS & KO-FI */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .kofi-btn {
+      background: linear-gradient(135deg, #ff5e5b, #e0322f);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255, 94, 91, 0.3);
+      text-decoration: none;
+    }
+
+    .kofi-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 94, 91, 0.5);
+      filter: brightness(1.1);
+    }
+
+    .kofi-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    /* PROGRESS TRACKER BAR */
+    .progress-section {
+      margin-top: 20px;
+      background: rgba(18, 22, 32, 0.6);
+      border: 1px solid var(--panel-border);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .progress-bar-container {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--d2-amber), var(--d2-cyan));
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 10px var(--d2-cyan);
+    }
+
+    /* CONTROLS: CATEGORIES & SEARCH */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: rgba(18, 24, 34, 0.7);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 9px 18px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(30, 40, 58, 0.8);
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      border-color: var(--d2-amber);
+      background: rgba(229, 169, 60, 0.15);
+      box-shadow: inset 0 0 12px rgba(229, 169, 60, 0.2);
+    }
+
+    .tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 15%;
+      width: 70%;
+      height: 2px;
+      background: var(--d2-amber);
+      box-shadow: 0 0 8px var(--d2-amber);
+    }
+
+    .search-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(15, 20, 29, 0.8);
+      border: 1px solid var(--panel-border);
+      padding: 10px 16px 10px 38px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--d2-amber);
+      box-shadow: 0 0 10px rgba(229, 169, 60, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .filter-toggles {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .custom-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--panel-border);
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked {
+      background: var(--d2-amber);
+      border-color: var(--d2-amber);
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked::after {
+      content: "✕";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #000;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* ITEM GRID */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+
+    /* CARD STYLING */
+    .item-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+    }
+
+    .item-card:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .item-card.claimed {
+      opacity: 0.58;
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(12, 20, 22, 0.85);
+    }
+
+    .item-card.claimed:hover {
+      opacity: 0.9;
+    }
+
+    .card-corner-tag {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background: var(--panel-border);
+      clip-path: polygon(100% 0, 0 0, 100% 100%);
+    }
+
+    .item-card.claimed .card-corner-tag {
+      background: var(--d2-claimed);
+    }
+
+    .card-header {
+      padding: 12px 14px 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .category-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 2px solid var(--d2-cyan);
+      color: var(--d2-cyan);
+    }
+
+    .category-badge.Ornaments { border-color: var(--d2-amber); color: var(--d2-amber); }
+    .category-badge.Shaders { border-color: #a855f7; color: #d8b4fe; }
+    .category-badge.Emotes { border-color: #ec4899; color: #f472b6; }
+    .category-badge.Ships { border-color: #3b82f6; color: #93c5fd; }
+    .category-badge.Sparrows { border-color: #10b981; color: #6ee7b7; }
+    .category-badge.Ghost-Shells { border-color: #eab308; color: #fde047; }
+
+    .claim-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex: 1;
+    }
+
+/* PREVIEW THUMBNAIL */
+    .preview-container {
+      width: 72px;
+      height: 72px;
+      background: #0d1219;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    }
+
+    .preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left center; /* <-- Anchors to the very left side */
+      display: block;
+      transition: transform 0.3s ease;
+      transform-origin: left center; /* Keeps zoom pinned to the left edge */
+    }
+
+    .preview-container:hover img {
+      transform: scale(1.1);
+    }
+
+    .preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-align: center;
+      padding: 4px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .preview-placeholder svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      margin-bottom: 2px;
+      opacity: 0.7;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-note {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      line-height: 1.3;
+    }
+
+    .card-footer {
+      background: rgba(10, 14, 22, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .code-link {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      color: var(--d2-amber);
+      text-decoration: none;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .code-link:hover {
+      color: #fff;
+      text-shadow: 0 0 8px var(--d2-amber-glow);
+    }
+
+    .code-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
+    .action-btn.copy-btn:active {
+      background: var(--d2-cyan);
+      color: #000;
+    }
+
+    .action-btn svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f1521;
+      border-left: 4px solid var(--d2-amber);
+      border-top: 1px solid var(--panel-border);
+      border-right: 1px solid var(--panel-border);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 14px 20px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+      transform: translateY(100px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* LIGHTBOX PREVIEW MODAL */
+    .lightbox-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      background: var(--panel-bg);
+      border: 1px solid var(--d2-amber);
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 0 30px var(--d2-amber-glow);
+    }
+
+    .lightbox-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border: 1px solid var(--panel-border);
+      background: #000;
+      display: block;
+    }
+
+    .lightbox-caption {
+      margin-top: 12px;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-lightbox {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-lightbox:hover {
+      color: #fff;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 60px;
+      border-top: 1px solid var(--panel-border);
+      padding-top: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .items-grid {
+        grid-template-columns: 1fr;
+      }
+      .title-group h1 {
+        font-size: 1.6rem;
+      }
+      .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="header-top">
+        <div class="logo-area">
+          <svg class="tricorn-icon" viewBox="0 0 100 100">
+            <path d="M50 5 L68 38 L95 44 L72 65 L78 95 L50 78 L22 95 L28 65 L5 44 L32 38 Z" fill="none" stroke="currentColor" stroke-width="4"/>
+            <circle cx="50" cy="50" r="14" fill="currentColor"/>
+          </svg>
+          <div class="title-group">
+            <h1>DESTINY 2 <span>// REDEEM ARCHIVE</span></h1>
+            <p>TACTICAL KIOSK // DIRECT PROTOCOL CODES</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="kofi-btn" onclick="openKofiWindow()">
+            <svg viewBox="0 0 24 24">
+              <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.022 5.64s-4.305 3.753-4.507 3.753c-.201 0-4.507-3.753-4.507-3.753-1.637-1.428-1.74-3.693-.231-5.202 1.509-1.509 3.957-1.509 5.466 0l.272.272.272-.272c1.509-1.509 3.957-1.509 5.466 0 1.509 1.509 1.406 3.774-.231 5.202zm7.135-2.285c-.456.913-1.282 1.488-2.378 1.624.116-1.542.068-3.153.068-4.707 1.096.082 1.922.657 2.378 1.57.456.913.456 1.6 0 1.513z"/>
+            </svg>
+            TRIBUTE // KO-FI
+          </button>
+        </div>
+      </div>
+
+      <!-- PROGRESS TRACKER -->
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span>PROGRESSION: <span id="progress-text">0 / 0</span> CLAIMED</span>
+          <span id="progress-percent" style="color: var(--d2-amber);">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTROLS & FILTER BAR -->
+    <section class="controls">
+      <div class="category-tabs" id="category-tabs">
+        <button class="tab-btn active" data-category="ALL">ALL [60]</button>
+        <button class="tab-btn" data-category="Emblems">EMBLEMS</button>
+        <button class="tab-btn" data-category="Shaders">SHADERS</button>
+        <button class="tab-btn" data-category="Emotes">EMOTES</button>
+        <button class="tab-btn" data-category="Transmats">TRANSMATS</button>
+        <button class="tab-btn" data-category="Ornaments">ORNAMENTS</button>
+        <button class="tab-btn" data-category="Ships">SHIPS</button>
+        <button class="tab-btn" data-category="Sparrows">SPARROWS</button>
+        <button class="tab-btn" data-category="Ghost Shells">GHOST SHELLS</button>
+      </div>
+
+      <div class="search-filter-row">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <input type="text" id="search-input" placeholder="SEARCH DATABASE BY NAME OR CODE..." />
+        </div>
+
+        <div class="filter-toggles">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="hide-claimed-toggle" />
+            <span>HIDE REDEEMED</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ITEM GRID -->
+    <main class="items-grid" id="items-grid"></main>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>BUNGIE.NET CODE REDEMPTION TERMINAL // FAN-MADE TOOL</p>
+      <p>Destiny 2 & all related assets are trademarks of Bungie, Inc.</p>
+    </footer>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--d2-amber)">
+      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+    <span id="toast-message">CODE COPIED TO CLIPBOARD</span>
+  </div>
+
+  <!-- LIGHTBOX PREVIEW MODAL -->
+  <div class="lightbox-modal" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--d2-amber);">ITEM INSPECTION</span>
+        <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
+      </div>
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Item Preview" />
+      <div class="lightbox-caption">
+        <span id="lightbox-title">Item Name</span>
+        <span id="lightbox-code" style="color:var(--d2-amber); font-family:var(--font-mono); font-size:1rem;">CODE</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       GUARDIAN DATABASE CONFIGURATION
+       - Supports:
+         1. Direct Bungie links: https://bungie.net/common/... or /common/...
+         2. GitHub raw links: https://raw.githubusercontent.com/...
+         3. GitHub repository links: https://github.com/.../blob/...
+         4. Local relative files: images/my-item.png
+       ========================================================================= */
+    const ITEMS = [
+      // Ukraine Sunflower (With Bungie Hosting Link pre-applied)
+      { 
+        code: "JVG-VNT-GGG", 
+        name: "соняшник (Ukraine Sunflower)", 
+        category: "Emblems", 
+        image: "https://www.bungie.net/common/destiny2_content/icons/4c113db5e1c0296027a1c7e1f84fb8b3.jpg", 
+        note: "Thanks to u/Eronade03" 
+      },
+
+      // Emblems
+      { code: "DXL-XHC-X37", name: "Runner", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/b2ac09f5d8482aa5034015113d092ecd.jpg", note: "Universal emblem" },
+      { code: "JA9-PRC-XKX", name: "Take the Mantle", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/7005a7ab5f9a038c8de4da69187bb16f.jpg", note: "Universal emblem" },
+      { code: "JGN-PX4-DFN", name: "Secret Signal", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/e2b43875a5f769e79a59fb0aa111cda8.jpg", note: "Universal emblem" },
+      { code: "JXJ-HVA-RCX", name: "Ever Forward", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/db147af2f8220f792c1cfb249115b7c5.jpg", note: "Universal emblem" },
+      { code: "VHT-6A7-3MM", name: "Conqueror of Infinity", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/1323e3a07937b5efc42f15480a12d03b.jpg", note: "Universal emblem" },
+      { code: "HG7-YRG-HHF", name: "Year of the Snake", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/a1056aaa6c6b853921ccd00eefd571d7.jpg", note: "Lunar New Year" },
+      { code: "9FY-KDD-PRT", name: "Adventurous Spirit", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/9fc87194709d4f0eb67b2c7fdaf89d56.jpg", note: "Universal emblem" },
+      { code: "THR-33A-YKC", name: "Risen", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/6cd753e92bafa4fc88845e581ff12ed6.jpg", note: "Season of the Risen" },
+      { code: "L3P-XXR-GJ4", name: "Out the Airlock", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/612eea3b484a6068de668cec76f0a68b.jpg", note: "Universal emblem" },
+      { code: "PTD-GKG-CVN", name: "Archived", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/c315fba634d2e8545174aa3327e9e178.jpg", note: "Universal emblem" },
+      { code: "3J9-AMM-7MG", name: "Folding Space", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/3fa44eef23119695edfc1afebeecc3c8.jpg", note: "Universal emblem" },
+      { code: "3CV-D6K-RD4", name: "Gone Home", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/548200a01538d34615dfafc19e02a523.jpg", note: "Universal emblem" },
+      { code: "FMM-44A-RKP", name: "Myopia", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/e78878266122a93803897202dc6874eb.jpg", note: "Universal emblem" },
+      { code: "6AJ-XFR-9ND", name: "Tigris Fati", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/317d1b544bcccf7ea2002e064243475f.jpg", note: "Universal emblem" },
+      { code: "A67-C7X-3GN", name: "Bulbul Tarang", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/bb6b2a1723b35df8ebbdb03710e8e8bd.jpg", note: "Universal emblem" },
+      { code: "VXN-V3T-MRP", name: "Harmonic Commencement", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/a9d47d875aaa6d968c706892fb6bb784.jpg", note: "Universal emblem" },
+      { code: "JND-HLR-L69", name: "M:>START", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/2d96bfd781a79915594a81ad5cd98235.jpg", note: "Universal emblem" },
+      { code: "HN3-7K9-93G", name: "Airlock Invitation", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/af1cba8c7031f0d93951cb5442ce00ba.jpg", note: "Universal emblem" },
+      { code: "TNN-DKM-6LG", name: "Jade's Burrow", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/39cec419f52051154cfac1da606738fc.jpg", note: "Universal emblem" },
+
+      // Lightfall CE Set
+      { code: "YAA-37T-FCN", name: "Neon Mirage : Lightfall CE Emblem 1", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/6673da0f2ce1f0e3685b4cc656b337e5.jpg", note: "Lightfall Collector's Edition (Universal)" },
+      { code: "993-H3H-M6K", name: "Visio Spei : Lightfall CE Emblem 2", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/66cb185a8665665411bff8b652f45f58.jpg", note: "Lightfall Collector's Edition (Universal)" },
+      { code: "XVK-RLA-RAM", name: "In Urbe Inventa : Lightfall CE Emblem 3", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/e6971d31c8a00c3c85f39acbcb2c9a45.jpg", note: "Lightfall Collector's Edition (Universal)" },
+      { code: "J6P-9YH-LLP", name: "In Vino Mendacium : Lightfall CE Emblem 4", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/0a34ca972c6f9b2721bec974f3d13e1b.jpg", note: "Lightfall Collector's Edition (Universal)" },
+      { code: "XMY-G9M-6XH", name: "Limitless Horizon : Lightfall CE Emblem 5", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/8a9d5815bdf5b3a3d27b1ca33eb4dd56.jpg", note: "Lightfall Collector's Edition (Universal)" },
+
+      // Additional Emblems
+      { code: "9LX-7YC-6TX", name: "Schrödinger's Gun", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/a64b3fe25e6636084442c86f67e0da48.jpg", note: "Universal emblem" },
+      { code: "XVX-DKJ-CVM", name: "Seraphim's Gauntlets", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/d535803d7cf7ee6b41476af20ae12bdd.jpg", note: "Universal emblem" },
+      { code: "T67-JXY-PH6", name: "Stag's Spirit", category: "Emblems", image: "https://destinyemblemcollector.b-cdn.net/10fcff49483946a0653866eefdaa1293.jpg", note: "Universal emblem" },
+      { code: "D97-YCX-7JK", name: "Crushed Gamma", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/74ebb19b261148e4a212eae3ac3b7ccb.jpg", note: "Universal emblem" },
+      { code: "ML3-FD4-ND9", name: "Be True", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/a6d9b66f124b25ac73969ebe4bc45b90.jpg", note: "Pride / Inclusion Emblem" },
+      { code: "L7T-CVV-3RD", name: "Heliotrope Warren", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/385c302dc22e6dafb8b50c253486d040.jpg", note: "Universal emblem" },
+      { code: "PKH-JL6-L4R", name: "Tangled Web", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/93a14eab2b1633d7affbf815d42af337.jpg", note: "Universal emblem" },
+      { code: "6LJ-GH7-TPA", name: "Sneer of the Oni", category: "Emblems", image: "https://destinyemblemcollector.b-cdn.net/bffe84c0efb9215dbdc8c4890c3e6234.jpg", note: "Universal emblem" },
+      { code: "F99-KPX-NCF", name: "Shadow's Light", category: "Emblems", image: "https://destinyemblemcollector.b-cdn.net/b296588f57aea1d15a04c3db6de98220.jpg", note: "Universal emblem" },
+      { code: "VA7-L7H-PNC", name: "Liminal Nadir", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/4f9f612716a973ff03e5e17e9d7e7c91.jpg", note: "Universal emblem" },
+      { code: "PHV-6LF-9CP", name: "Countdown to Convergence", category: "Emblems", image: "https://destinyemblemcollector.b-cdn.net/2560de3d4009044b291c6cfb69d11a7f.jpg", note: "Universal emblem" },
+      { code: "7D4-PKR-MD7", name: "Sequence Flourish", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/01e9b3863c14f9149ff4035b896ad5ed.jpg", note: "Universal emblem" },
+      { code: "YRC-C3D-YNC", name: "A Classy Order", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/adaf0e2c15610cdfff750725701222ec.jpg", note: "Universal emblem" },
+      { code: "RA9-XPH-6KJ", name: "Cryonautics", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/6719dde48dca592addb4102cb747e097.jpg", note: "Universal emblem" },
+      { code: "7LV-GTK-T7J", name: "Future in Shadow", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/dd9af60ef15319ee986a1f6cc029fe71.jpg", note: "Universal emblem" },
+      { code: "JYN-JAA-Y7D", name: "Galilean Excursion", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/3e99d575d00fb307c15fb5513dee13c6.jpg", note: "Universal emblem" },
+      { code: "XFV-KHP-N97", name: "The Visionary", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/65b4047b1b83aeeeb2e628305071fcea.jpg", note: "Active since 2017" },
+      { code: "VMG-HXK-VAL", name: "Broken and Bruised", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/f97d715e21533bcd1a2bc597d30c3ad6.jpg", note: "Universal emblem" },
+      { code: "F6K-D44-JH4", name: "Gloriabundus", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/df2a0b7eb6405462991a04be9356100d.jpg", note: "Universal emblem" },
+      { code: "JRR-7YA-CCC", name: "Last Blush", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/b098c64da04eaa04b7cfcdeef8a413b6.jpg", note: "Universal emblem" },
+      { code: "FCX-P94-JCV", name: "Little Light", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/1bf6a03a400c86f20af4a5d009f4c9a6.jpg", note: "Universal emblem" },
+      { code: "7LD-PLJ-FN3", name: "Lofty Wail", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/d6c1e5080aa45cc2f44994947a42b775.jpg", note: "Universal emblem" },
+      { code: "J64-HYC-HTD", name: "Red Shift Returning", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/208a0d11715db76568dfb27d637ba8b2.jpg", note: "Universal emblem" },
+      { code: "9NG-KDD-PNG", name: "Tethered Storm", category: "Emblems", image: "https://www.bungie.net/common/destiny2_content/icons/8736bf50d8bd407a5a2805a662f5a687.jpg", note: "Universal emblem" },
+
+      // Shaders
+      { code: "D6T-3JR-CKX", name: "Prismatic Expanse", category: "Shaders", image: "https://www.bungie.net/common/destiny2_content/icons/de6db75364ef2f0fecbfcd1d0a25977b.jpg", note: "Legendary Armor Shader" },
+      { code: "FLK-TXG-P4A", name: "Hot and Cold Shader", category: "Shaders", image: "https://www.bungie.net/common/destiny2_content/icons/4ebcd2aadaab4a9670813e55f2379997.jpg", note: "Armor / Weapon Shader" },
+
+      // Emotes
+      { code: "Tk7-D3p-FdF", name: "Rainbow Connection", category: "Emotes", image: "https://www.bungie.net/common/destiny2_content/icons/6b11266fcdb8e1e8bb8965724e1bfe20.jpg", note: "Exotic Rarity Emote" },
+
+      // Transmat Effects
+      { code: "R9J-79m-j6C", name: "End of the Rainbow", category: "Transmats", image: "https://www.bungie.net/common/destiny2_content/icons/ac741348c625bc6a6efe1bcebda3c48d.jpg", note: "Transmat Arrival Effect" },
+
+      // Ornaments / Ships / Sparrows / Ghost Shells
+      { code: "3TG-G67-PYD", name: "Deadlands Titan Ornament Set", category: "Ornaments", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/blt705e5d26b97addf0/6a28384949a4e20a84b07fb3/D2_Evergreen_CM_Armor_1920x1080.jpg", note: "Universal Titan Armor Set" },
+      { code: "MMX-3HF-CJ4", name: "Deadlands Warlock Ornament Set", category: "Ornaments", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/blt705e5d26b97addf0/6a28384949a4e20a84b07fb3/D2_Evergreen_CM_Armor_1920x1080.jpg", note: "Universal Warlock Armor Set" },
+      { code: "6MC-A3F-X3R", name: "Deadlands Hunter Ornament Set", category: "Ornaments", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/blt705e5d26b97addf0/6a28384949a4e20a84b07fb3/D2_Evergreen_CM_Armor_1920x1080.jpg", note: "Universal Hunter Armor Set" },
+      { code: "FPP-NHV-HNC", name: "Field Transcriber Ghost Shell", category: "Ghost Shells", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/bltb43513f23da5388b/6a283849f022838fb965c402/D2_Evergreen_CM_Accessories_1920x1080.jpg", note: "Legendary Ghost Shell" },
+      { code: "7AM-PJR-GMX", name: "Mobile Array Sparrow", category: "Sparrows", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/bltb43513f23da5388b/6a283849f022838fb965c402/D2_Evergreen_CM_Accessories_1920x1080.jpg", note: "Custom Vehicle" },
+      { code: "M3L-7DA-67C", name: "Evergreen Destrier Sparrow", category: "Sparrows", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/bltd16fc10cf3c88f67/6a283848197c4c65a32c7df1/D2_Evergreen_CM_Sparrow_1920x1080.jpg", note: "Custom Vehicle" },
+      { code: "K9P-PVD-NR6", name: "Dynamic Equivalence Ship", category: "Ships", image: "https://images.contentstack.io/v3/assets/blte410e3b15535c144/bltb43513f23da5388b/6a283849f022838fb965c402/D2_Evergreen_CM_Accessories_1920x1080.jpg", note: "Jumpship" }
+    ];
+
+    const SVG_ICONS = {
+      Emblems: `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>`,
+      Shaders: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
+      Emotes: `<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm4-9a1.5 1.5 0 1 1-1.5-1.5A1.5 1.5 0 0 1 16 11zm-8 0a1.5 1.5 0 1 1-1.5-1.5A1.5 1.5 0 0 1 8 11zm4 6a5.5 5.5 0 0 1-4.7-2.6 1 1 0 0 1 1.7-1 3.5 3.5 0 0 0 6 0 1 1 0 0 1 1.7 1A5.5 5.5 0 0 1 12 17z"/></svg>`,
+      Transmats: `<svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>`,
+      Ornaments: `<svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm0 4.5l5 2.78v4.22c0 3.11-2.16 6.02-5 6.78-2.84-.76-5-3.67-5-6.78V9.28L12 6.5z"/></svg>`,
+      Ships: `<svg viewBox="0 0 24 24"><path d="M2.5 19h19l-9.5-16z"/></svg>`,
+      Sparrows: `<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>`,
+      "Ghost Shells": `<svg viewBox="0 0 24 24"><path d="M12 2L4 9l3 11h10l3-11-8-7zm0 6a4 4 0 1 1-4 4 4 4 0 0 1 4-4z"/></svg>`
+    };
+
+    const STORAGE_KEY = "d2_redeemed_codes_list";
+    let redeemedCodes = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+
+    let currentCategory = "ALL";
+    let searchQuery = "";
+    let hideClaimed = false;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderCards();
+      updateProgress();
+      setupTabs();
+      setupSearchAndFilters();
+    });
+
+    // Auto-normalizes URLs for Bungie & GitHub
+    function normalizeImageUrl(url) {
+      if (!url) return "";
+      url = url.trim();
+
+      // Convert relative Bungie path to full URL
+      if (url.startsWith("/common/") || url.startsWith("common/")) {
+        return "https://www.bungie.net/" + url.replace(/^\/+/, "");
+      }
+      
+      // Ensure bungie.net uses www.bungie.net CDN
+      if (url.startsWith("https://bungie.net/")) {
+        return url.replace("https://bungie.net/", "https://www.bungie.net/");
+      }
+
+      // Convert GitHub blob links to raw file CDN
+      if (url.includes("github.com") && url.includes("/blob/")) {
+        return url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/");
+      }
+
+      return url;
+    }
+
+    function openKofiWindow() {
+      const width = 480;
+      const height = 720;
+      const left = Math.max(0, (window.innerWidth - width) / 2 + window.screenX);
+      const top = Math.max(0, (window.innerHeight - height) / 2 + window.screenY);
+      window.open(
+        "https://ko-fi.com/xsmashx88x/tip",
+        "kofiWindow",
+        `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`
+      );
+    }
+
+    function setupTabs() {
+      const tabs = document.querySelectorAll(".tab-btn");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          currentCategory = tab.dataset.category;
+          renderCards();
+        });
+      });
+    }
+
+    function setupSearchAndFilters() {
+      const searchInput = document.getElementById("search-input");
+      searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value.toLowerCase().trim();
+        renderCards();
+      });
+
+      const hideToggle = document.getElementById("hide-claimed-toggle");
+      hideToggle.addEventListener("change", (e) => {
+        hideClaimed = e.target.checked;
+        renderCards();
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+
+    // RENDER CARDS SAFELY VIA DOM
+    function renderCards() {
+      const grid = document.getElementById("items-grid");
+      grid.innerHTML = "";
+
+      const filtered = ITEMS.filter(item => {
+        const matchesCategory = (currentCategory === "ALL" || item.category === currentCategory);
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.code.toLowerCase().includes(searchQuery);
+        const isClaimed = redeemedCodes.has(item.code);
+        const matchesClaimed = hideClaimed ? !isClaimed : true;
+        return matchesCategory && matchesSearch && matchesClaimed;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; font-family: var(--font-mono); color: var(--text-muted);">
+            NO CODES FOUND MATCHING ACTIVE PROTOCOLS.
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const isClaimed = redeemedCodes.has(item.code);
+        const card = document.createElement("div");
+        card.className = `item-card ${isClaimed ? "claimed" : ""}`;
+        card.dataset.code = item.code;
+
+        const badgeClass = item.category.replace(/\s+/g, '-');
+        const bungieRedeemUrl = `https://bungie.net/7/en/codes/redeem?token=${encodeURIComponent(item.code)}`;
+
+        card.innerHTML = `
+          <div class="card-corner-tag"></div>
+          <div class="card-header">
+            <span class="category-badge ${badgeClass}">// ${item.category}</span>
+            <label class="claim-action custom-checkbox">
+              <input type="checkbox" ${isClaimed ? "checked" : ""} class="claim-checkbox" />
+              <span>${isClaimed ? "CLAIMED" : "UNCLAIMED"}</span>
+            </label>
+          </div>
+          <div class="card-body">
+            <div class="preview-container" title="Click to Inspect"></div>
+            <div class="item-info">
+              <h3 class="item-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</h3>
+              <p class="item-note">${escapeHtml(item.note || "Bungie.net redeemable code")}</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="${bungieRedeemUrl}" target="_blank" rel="noopener noreferrer" class="code-link" title="Click to Redeem on Bungie.net">
+              ${item.code}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+              </svg>
+            </a>
+            <div class="code-actions">
+              <button class="action-btn copy-btn" title="Copy code to clipboard">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                COPY
+              </button>
+            </div>
+          </div>
+        `;
+
+        // Checkbox event
+        const checkbox = card.querySelector(".claim-checkbox");
+        checkbox.addEventListener("change", () => toggleClaim(item.code));
+
+        // Copy button event
+        const copyBtn = card.querySelector(".copy-btn");
+        copyBtn.addEventListener("click", () => copyCode(item.code));
+
+        // Preview Container: Construct image cleanly in DOM
+        const previewContainer = card.querySelector(".preview-container");
+        if (item.image && item.image.trim() !== "") {
+          const finalUrl = normalizeImageUrl(item.image);
+          const img = document.createElement("img");
+          img.src = finalUrl;
+          img.alt = item.name;
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer"; // Crucial for Bungie CDN compatibility
+
+          img.addEventListener("click", () => {
+            openLightbox(finalUrl, item.name, item.code);
+          });
+
+          img.addEventListener("error", () => {
+            previewContainer.innerHTML = getSvgPlaceholder(item.category);
+          });
+
+          previewContainer.appendChild(img);
+        } else {
+          previewContainer.innerHTML = getSvgPlaceholder(item.category);
+        }
+
+        grid.appendChild(card);
+      });
+    }
+
+    function getSvgPlaceholder(category) {
+      const svg = SVG_ICONS[category] || SVG_ICONS.Emblems;
+      return `<div class="preview-placeholder">${svg}<span>${category.toUpperCase()}</span></div>`;
+    }
+
+    function toggleClaim(code) {
+      if (redeemedCodes.has(code)) {
+        redeemedCodes.delete(code);
+        showToast(`UNMARKED // ${code}`);
+      } else {
+        redeemedCodes.add(code);
+        showToast(`CLAIMED // ${code}`);
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...redeemedCodes]));
+      renderCards();
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = ITEMS.length;
+      const claimed = redeemedCodes.size;
+      const percent = total > 0 ? Math.round((claimed / total) * 100) : 0;
+
+      document.getElementById("progress-text").textContent = `${claimed} / ${total}`;
+      document.getElementById("progress-percent").textContent = `${percent}%`;
+      document.getElementById("progress-fill").style.width = `${percent}%`;
+    }
+
+    function copyCode(code) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast(`COPIED // ${code}`);
+        });
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = code;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          showToast(`COPIED // ${code}`);
+        } catch (err) {
+          showToast(`ERROR COPYING CODE`);
+        }
+        document.body.removeChild(textArea);
+      }
+    }
+
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      const text = document.getElementById("toast-message");
+      text.textContent = msg;
+
+      toast.classList.add("show");
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function openLightbox(imgSrc, title, code) {
+      if (!imgSrc) return;
+      document.getElementById("lightbox-img").src = imgSrc;
+      document.getElementById("lightbox-title").textContent = title;
+      document.getElementById("lightbox-code").textContent = code;
+      document.getElementById("lightbox").classList.add("active");
+    }
+
+    function closeLightbox() {
+      document.getElementById("lightbox").classList.remove("active");
+    }
+  </script>
+</body>
+</html>
