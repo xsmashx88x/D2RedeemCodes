@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vanguard Archive // Destiny 2 Code Terminal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -50,7 +50,7 @@
             color: #d1d5db;
             font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden;
-            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Ambient Animated Grid & Radial Backdrop */
@@ -58,7 +58,13 @@
             background-image: 
                 linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-size: 32px 32px;
+        }
+
+        @media (min-width: 640px) {
+            .d2-bg-grid {
+                background-size: 40px 40px;
+            }
         }
 
         .d2-bg-radial {
@@ -78,17 +84,23 @@
             pointer-events: none;
         }
 
-        /* Node Hover Effects */
+        /* Node Hover Effects for Pointer / Desktop only */
         .d2-node {
             position: relative;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
-        .d2-node:hover {
-            transform: scale(1.02) translateY(-2px);
-            box-shadow: inset 0 0 0 2px #e2b33c, 0 8px 25px rgba(226, 179, 60, 0.25);
-            z-index: 20;
+        @media (hover: hover) and (pointer: fine) {
+            .d2-node:hover {
+                transform: scale(1.015) translateY(-2px);
+                box-shadow: inset 0 0 0 2px #e2b33c, 0 8px 25px rgba(226, 179, 60, 0.25);
+                z-index: 20;
+            }
+        }
+
+        .d2-node:active {
+            transform: scale(0.99);
         }
 
         /* Tactical HUD Corner Brackets */
@@ -102,6 +114,7 @@
             width: 8px; height: 8px;
             border-top: 2px solid rgba(226, 179, 60, 0.8);
             border-left: 2px solid rgba(226, 179, 60, 0.8);
+            pointer-events: none;
         }
         .hud-bracket::after {
             content: '';
@@ -110,12 +123,13 @@
             width: 8px; height: 8px;
             border-bottom: 2px solid rgba(226, 179, 60, 0.8);
             border-right: 2px solid rgba(226, 179, 60, 0.8);
+            pointer-events: none;
         }
 
         /* Scrollbars */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: #0a0d13;
@@ -144,241 +158,249 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-destiny-bg text-gray-200 relative overflow-x-hidden selection:bg-destiny-accent selection:text-black">
+    
+    <!-- Ko-Fi Floating Chat Widget -->
     <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-<script>
-  kofiWidgetOverlay.draw('xsmashx88x', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
-</script>
+    <script>
+      kofiWidgetOverlay.draw('xsmashx88x', {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#00b9fe',
+        'floating-chat.donateButton.text-color': '#fff'
+      });
+    </script>
+
     <!-- Ambient Overlay Layers -->
     <div class="fixed inset-0 d2-bg-grid pointer-events-none z-0"></div>
     <div class="fixed inset-0 d2-bg-radial pointer-events-none z-0"></div>
-    <div class="fixed inset-0 scanlines opacity-40 pointer-events-none z-10"></div>
+    <div class="fixed inset-0 scanlines opacity-30 sm:opacity-40 pointer-events-none z-10"></div>
 
     <!-- MAIN WRAPPER -->
     <div class="relative z-20 flex flex-col min-h-screen">
 
         <!-- DIRECTOR HEADER / TOP NAVIGATION BAR -->
-        <header class="border-b border-white/10 bg-black/70 backdrop-blur-md sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="border-b border-white/10 bg-black/80 backdrop-blur-md sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 
                 <!-- TOP UTILITY / SYSTEM BAR -->
-                <div class="flex items-center justify-between py-2 border-b border-white/5 text-xs font-d2Mono text-destiny-textDim">
-                    <div class="flex items-center space-x-4">
-                        <span class="flex items-center text-destiny-accent font-bold tracking-wider">
-                            <i class="fa-solid fa-terminal mr-2"></i> VANGUARD ARCHIVE TERMINAL // v7.4.2
+                <div class="flex items-center justify-between py-2 border-b border-white/5 text-[11px] sm:text-xs font-d2Mono text-destiny-textDim">
+                    <div class="flex items-center space-x-2 sm:space-x-4 truncate">
+                        <span class="flex items-center text-destiny-accent font-bold tracking-wider truncate">
+                            <i class="fa-solid fa-terminal mr-1.5 sm:mr-2 text-[10px] sm:text-xs"></i>
+                            <span class="truncate">VANGUARD TERMINAL // v7.4.2</span>
                         </span>
                         <span class="hidden md:inline text-white/30">|</span>
-                        <span class="hidden md:inline"><i class="fa-solid fa-wifi text-emerald-400 mr-1"></i> BUNGIE.NET DIRECT REDEEM LINKED</span>
+                        <span class="hidden md:inline"><i class="fa-solid fa-wifi text-emerald-400 mr-1"></i> BUNGIE.NET DIRECT LINKED</span>
                     </div>
-                    <div class="flex items-center space-x-6">
-                        <span id="systemClock" class="tracking-widest">2026.10.22 - 11:00:00 EDT</span>
+                    <div class="flex items-center space-x-3 sm:space-x-6 shrink-0">
+                        <span id="systemClock" class="hidden sm:inline tracking-widest text-[10px] sm:text-xs">2026.10.22 - 11:00:00 EDT</span>
                         <a href="https://www.bungie.net/7/en/codes/redeem" target="_blank" rel="noopener noreferrer" 
-                           class="hover:text-destiny-accent transition-colors flex items-center gap-1 text-white/80">
-                            <span>Official Bungie Redeem</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                           class="hover:text-destiny-accent transition-colors flex items-center gap-1.5 text-white/80 py-0.5">
+                            <span class="text-[11px] sm:text-xs">Bungie.net</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px] sm:text-[10px]"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- GUARDIAN TERMINAL TITLE & LIGHT LEVEL BAR -->
-                <div class="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
+                <div class="py-3 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+                    <div class="flex items-center gap-3 sm:gap-4">
                         <!-- Tricorn Emblem Icon -->
-                        <div class="w-12 h-12 rounded bg-gradient-to-br from-destiny-accent/20 to-black border border-destiny-accent/50 flex items-center justify-center text-destiny-accent shadow-lg shadow-destiny-accent/10 shrink-0">
-                            <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded bg-gradient-to-br from-destiny-accent/20 to-black border border-destiny-accent/50 flex items-center justify-center text-destiny-accent shadow-lg shadow-destiny-accent/10 shrink-0">
+                            <svg class="w-6 h-6 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24">
                                 <path d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.3L18 8v8l-6 3.7L6 16V8l6-3.7z"/>
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-2xl sm:text-3xl font-d2Header font-black tracking-widest text-white uppercase drop-shadow">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                                <h1 class="text-xl sm:text-2xl md:text-3xl font-d2Header font-black tracking-wider sm:tracking-widest text-white uppercase drop-shadow truncate">
                                     COLLECTIONS <span class="text-destiny-accent font-light">//</span> VAULT
                                 </h1>
-                                <span class="px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 font-d2Mono text-xs rounded tracking-wider flex items-center gap-1">
-                                    <i class="fa-solid fa-star text-[10px]"></i>
+                                <span class="px-1.5 sm:px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 font-d2Mono text-[10px] sm:text-xs rounded tracking-wider flex items-center gap-1 shrink-0">
+                                    <i class="fa-solid fa-star text-[9px]"></i>
                                     POWER 2000
                                 </span>
                             </div>
-                            <p class="text-xs text-destiny-textDim font-d2Hud tracking-wider uppercase">ARCHIVAL RECOVERABLE ITEMS & UNCLAIMED EMBLEM TERMINAL</p>
+                            <p class="text-[10px] sm:text-xs text-destiny-textDim font-d2Hud tracking-wider uppercase truncate">ARCHIVAL RECOVERABLE ITEMS & UNCLAIMED EMBLEMS</p>
                         </div>
                     </div>
 
-<!-- RIGHT SIDEBAR: PROGRESS TRACKER & KO-FI SUPPORT -->
-                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full md:w-auto">
-                        
+                    <!-- PROGRESS TRACKER & KO-FI SUPPORT -->
+                    <div class="flex items-center gap-2 sm:gap-3 w-full md:w-auto">
                         <!-- Progression & Claim Tracker -->
-                        <div class="flex-1 sm:flex-initial flex flex-col justify-center min-w-[200px] bg-white/5 border border-white/10 p-2.5 rounded hud-bracket">
-                            <div class="flex justify-between items-center text-xs font-d2Hud mb-1 gap-2">
-                                <span class="text-destiny-textDim uppercase font-bold tracking-wider">Collection Unlocked</span>
+                        <div class="flex-1 md:flex-initial flex flex-col justify-center min-w-[140px] sm:min-w-[190px] bg-white/5 border border-white/10 p-2 sm:p-2.5 rounded hud-bracket">
+                            <div class="flex justify-between items-center text-[10px] sm:text-xs font-d2Hud mb-1 gap-2">
+                                <span class="text-destiny-textDim uppercase font-bold tracking-wider">Unlocked</span>
                                 <span id="claimStatsText" class="text-destiny-accent font-d2Mono font-bold">0 / 60 (0%)</span>
                             </div>
-                            <div class="w-full h-2 bg-black/60 rounded-full overflow-hidden border border-white/10">
+                            <div class="w-full h-1.5 sm:h-2 bg-black/60 rounded-full overflow-hidden border border-white/10">
                                 <div id="progressBar" class="h-full bg-gradient-to-r from-yellow-600 via-destiny-accent to-yellow-300 w-0 transition-all duration-500 shadow-sm"></div>
                             </div>
                         </div>
 
                         <!-- Ko-Fi Support Button -->
                         <a href="https://ko-fi.com/xsmashx88x/tip" target="_blank" rel="noopener noreferrer" 
-                           class="hud-bracket px-4 py-2.5 bg-gradient-to-r from-rose-950/60 to-red-900/60 hover:from-rose-900 hover:to-red-800 border border-rose-500/40 text-rose-300 hover:text-white font-d2Hud font-bold text-xs tracking-widest uppercase rounded flex items-center justify-center gap-2 transition shadow-lg shrink-0 self-stretch sm:self-auto">
-                            <i class="fa-solid fa-heart text-rose-400 animate-pulse"></i>
-                            <span>SUPPORT THIS</span>
+                           class="hud-bracket px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-rose-950/60 to-red-900/60 hover:from-rose-900 hover:to-red-800 border border-rose-500/40 text-rose-300 hover:text-white font-d2Hud font-bold text-[10px] sm:text-xs tracking-wider sm:tracking-widest uppercase rounded flex items-center justify-center gap-1.5 sm:gap-2 transition shadow-lg shrink-0">
+                            <i class="fa-solid fa-heart text-rose-400 text-xs animate-pulse"></i>
+                            <span class="whitespace-nowrap">SUPPORT</span>
                         </a>
-</div>
                     </div>
+                </div>
 
-                <!-- DIRECTOR HORIZONTAL NAVIGATION TABS -->
-                <nav class="flex space-x-1 overflow-x-auto no-scrollbar border-t border-white/10 pt-2 pb-1" id="categoryTabs">
-                    <!-- Dynamic Category Tabs JS generated -->
-                </nav>
+                <!-- DIRECTOR HORIZONTAL NAVIGATION TABS WITH MOBILE SCROLL INDICATOR -->
+                <div class="relative border-t border-white/10">
+                    <nav class="flex space-x-1 overflow-x-auto no-scrollbar pt-2 pb-1.5" id="categoryTabs">
+                        <!-- Dynamic Category Tabs JS generated -->
+                    </nav>
+                </div>
             </div>
         </header>
 
         <!-- MAIN TERMINAL CONTENT AREA -->
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
 
             <!-- SEARCH, FILTERS & CONTROLS TOOLBAR -->
-            <div class="bg-destiny-panel/80 backdrop-blur border border-white/10 p-4 rounded-lg flex flex-col md:flex-row gap-4 items-center justify-between hud-bracket shadow-xl">
+            <div class="bg-destiny-panel/90 backdrop-blur border border-white/10 p-3 sm:p-4 rounded-lg flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch md:items-center justify-between hud-bracket shadow-xl">
                 
-                <!-- Query Search Bar -->
-                <div class="relative w-full md:w-96">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-destiny-textDim text-sm"></i>
+                <!-- Query Search Bar (text-base on mobile avoids iOS safari auto-zoom) -->
+                <div class="relative w-full md:w-80 lg:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-destiny-textDim text-sm pointer-events-none"></i>
                     <input type="text" id="searchInput" placeholder="SEARCH CODES, EMBLEMS, SHADERS..." 
-                           class="w-full bg-black/60 border border-white/15 rounded pl-10 pr-8 py-2 text-sm text-white placeholder-destiny-textDim/60 font-d2Hud tracking-wider focus:outline-none focus:border-destiny-accent focus:ring-1 focus:ring-destiny-accent transition">
-                    <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-destiny-textDim hover:text-white text-xs">
+                           class="w-full bg-black/60 border border-white/15 rounded pl-10 pr-9 py-2.5 sm:py-2 text-base sm:text-sm text-white placeholder-destiny-textDim/60 font-d2Hud tracking-wider focus:outline-none focus:border-destiny-accent focus:ring-1 focus:ring-destiny-accent transition">
+                    <button id="clearSearchBtn" aria-label="Clear Search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-destiny-textDim hover:text-white text-sm p-1">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <!-- Action Controls & Toggles -->
-                <div class="flex flex-wrap items-center justify-end gap-3 w-full md:w-auto font-d2Hud">
-                    
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-end gap-2 sm:gap-3 w-full md:w-auto font-d2Hud">
                     <!-- Unclaimed Filter Toggle -->
-                    <label class="flex items-center gap-2 cursor-pointer bg-black/40 border border-white/10 px-3 py-1.5 rounded hover:border-white/30 transition text-xs font-semibold tracking-wider">
+                    <label class="flex items-center justify-center sm:justify-start gap-2 cursor-pointer bg-black/40 border border-white/10 px-3 py-2 sm:py-1.5 rounded hover:border-white/30 transition text-[11px] sm:text-xs font-semibold tracking-wider select-none">
                         <input type="checkbox" id="hideClaimedToggle" class="sr-only peer">
-                        <div class="w-4 h-4 border border-white/40 rounded bg-black peer-checked:bg-destiny-accent peer-checked:border-destiny-accent flex items-center justify-center transition">
+                        <div class="w-4 h-4 border border-white/40 rounded bg-black peer-checked:bg-destiny-accent peer-checked:border-destiny-accent flex items-center justify-center transition shrink-0">
                             <i class="fa-solid fa-check text-black text-[10px] opacity-0 peer-checked:opacity-100"></i>
                         </div>
-                        <span class="text-gray-300 peer-checked:text-destiny-accent">HIDE CLAIMED NODES</span>
+                        <span class="text-gray-300 peer-checked:text-destiny-accent whitespace-nowrap">HIDE CLAIMED</span>
                     </label>
 
                     <!-- Reset Claimed State -->
-                    <button id="resetAllBtn" class="px-3 py-1.5 bg-red-950/30 border border-red-500/30 hover:border-red-500 text-red-400 hover:text-red-300 text-xs font-semibold rounded tracking-wider transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-rotate-left"></i>
-                        <span>RESET STATES</span>
+                    <button id="resetAllBtn" class="px-3 py-2 sm:py-1.5 bg-red-950/30 border border-red-500/30 hover:border-red-500 text-red-400 hover:text-red-300 text-[11px] sm:text-xs font-semibold rounded tracking-wider transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                        <span class="whitespace-nowrap">RESET ALL</span>
                     </button>
                 </div>
             </div>
 
             <!-- RESULTS COUNT & ACTIVE FILTER BAR -->
-            <div class="flex items-center justify-between text-xs font-d2Hud text-destiny-textDim tracking-wider border-b border-white/5 pb-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] sm:text-xs font-d2Hud text-destiny-textDim tracking-wider border-b border-white/5 pb-2 gap-1">
                 <div>
                     DISPLAYING <span id="visibleCountText" class="text-white font-bold font-d2Mono">60</span> COLLECTION NODES
                 </div>
-                <div class="text-right">
-                    <span>TIP: CLICK NODE TO INSPECT / DIRECT REDEEM ON BUNGIE.NET</span>
+                <div class="text-left sm:text-right text-[10px] sm:text-[11px] text-destiny-textDim/80">
+                    <span class="hidden sm:inline">TIP: </span>TAP ANY NODE TO INSPECT OR DIRECT REDEEM
                 </div>
             </div>
 
             <!-- DYNAMIC ITEM GRID CONTAINER -->
-            <div id="itemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-12">
+            <div id="itemsGrid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-20 sm:pb-12">
                 <!-- Items dynamically rendered via JS -->
             </div>
 
             <!-- EMPTY RESULTS PLACEHOLDER -->
-            <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center bg-black/20 border border-dashed border-white/10 rounded-lg">
-                <i class="fa-solid fa-ghost text-5xl text-destiny-textDim mb-4 pulse-glow"></i>
-                <h3 class="text-xl font-d2Header text-white mb-1">NO ARCHIVAL DATA FOUND</h3>
-                <p class="text-xs font-d2Hud text-destiny-textDim max-w-md">No items match your active Vanguard filter criteria or search terms. Reset search parameters to view inventory.</p>
+            <div id="emptyState" class="hidden flex-col items-center justify-center py-16 sm:py-20 text-center bg-black/20 border border-dashed border-white/10 rounded-lg px-4">
+                <i class="fa-solid fa-ghost text-4xl sm:text-5xl text-destiny-textDim mb-3 pulse-glow"></i>
+                <h3 class="text-lg sm:text-xl font-d2Header text-white mb-1">NO ARCHIVAL DATA FOUND</h3>
+                <p class="text-xs font-d2Hud text-destiny-textDim max-w-md">No items match your active filter criteria. Try adjusting your search query or reset filters.</p>
             </div>
 
         </main>
 
         <!-- FOOTER -->
-        <footer class="border-t border-white/10 bg-black/80 py-6 text-center text-xs text-destiny-textDim font-d2Hud tracking-wider mt-auto">
-            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <footer class="border-t border-white/10 bg-black/80 py-5 sm:py-6 text-center text-[11px] sm:text-xs text-destiny-textDim font-d2Hud tracking-wider mt-auto pb-24 sm:pb-6">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-destiny-accent"></i>
-                    <span>DESTINY 2 RECOVERY TERMINAL // UNAUTHORIZED REPLICATION PROHIBITED</span>
+                    <span>DESTINY 2 RECOVERY TERMINAL // ARCHIVE</span>
                 </div>
-                <div class="text-white/40">
-                    Not affiliated with Bungie, Inc. Destiny & all related assets are trademarks of Bungie, Inc.
+                <div class="text-white/40 text-[10px] sm:text-xs">
+                    Not affiliated with Bungie, Inc. Destiny 2 & assets are trademarks of Bungie, Inc.
                 </div>
             </div>
         </footer>
     </div>
 
     <!-- ITEM INSPECTION MODAL -->
-    <div id="inspectModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-destiny-panel border border-white/20 rounded-lg max-w-xl w-full overflow-hidden shadow-2xl relative hud-bracket transform scale-95 transition-transform duration-300 flex flex-col" id="modalContainer">
+    <div id="inspectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-destiny-panel border-t sm:border border-white/20 rounded-t-xl sm:rounded-lg max-w-lg w-full max-h-[90dvh] overflow-hidden shadow-2xl relative hud-bracket transform translate-y-8 sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col" id="modalContainer">
             
             <!-- Modal Header / Rarity Banner Strip -->
-            <div id="modalRarityBanner" class="h-2 w-full bg-destiny-accent"></div>
+            <div id="modalRarityBanner" class="h-1.5 sm:h-2 w-full bg-destiny-accent shrink-0"></div>
 
-            <button id="closeModalBtn" class="absolute top-4 right-4 text-destiny-textDim hover:text-white bg-black/40 border border-white/10 w-8 h-8 rounded-full flex items-center justify-center transition z-10">
-                <i class="fa-solid fa-xmark"></i>
+            <button id="closeModalBtn" aria-label="Close Preview" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-destiny-textDim hover:text-white bg-black/60 border border-white/20 w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition z-20 active:scale-90">
+                <i class="fa-solid fa-xmark text-sm"></i>
             </button>
 
-            <!-- Large Image Preview Top Container -->
-            <div class="w-full bg-black/80 border-b border-white/10 p-6 flex flex-col items-center justify-center relative min-h-[200px]">
-                <img id="modalImage" src="" alt="Item Preview" referrerpolicy="no-referrer" class="max-h-64 max-w-full object-contain rounded shadow-lg">
-                <span id="modalCategoryTag" class="mt-4 text-[10px] font-d2Mono tracking-widest text-destiny-accent border border-destiny-accent/30 bg-destiny-accent/10 px-3 py-1 rounded uppercase">
-                    EMBLEM
-                </span>
-            </div>
-
-            <!-- Item Details & Actions Bottom Container -->
-            <div class="p-6 flex flex-col space-y-4">
-                <div>
-                    <div class="flex items-center justify-between gap-2 mb-1">
-                        <span id="modalRarityText" class="text-xs font-bold tracking-widest uppercase text-destiny-accent">EXOTIC</span>
-                    </div>
-                    <h2 id="modalTitle" class="text-2xl font-d2Header text-white uppercase tracking-wider leading-snug break-words">ITEM NAME</h2>
-                    <p id="modalNote" class="text-xs text-destiny-textDim font-d2Hud italic mt-1">Source / Note info</p>
-                    
-                    <div class="my-4 border-t border-white/10 pt-3">
-                        <span class="text-[10px] font-d2Hud text-destiny-textDim uppercase tracking-wider block mb-1">REDEEMABLE TOKEN CODE</span>
-                        <div class="bg-black/80 border border-white/20 p-2.5 rounded font-d2Mono text-xl font-bold text-center tracking-widest text-yellow-400 select-all flex items-center justify-center gap-2">
-                            <span id="modalCode">XXX-XXX-XXX</span>
-                        </div>
-                    </div>
+            <!-- Scrollable Content Wrapper -->
+            <div class="overflow-y-auto flex-1">
+                <!-- Image Preview Top Container -->
+                <div class="w-full bg-black/90 border-b border-white/10 p-4 sm:p-6 flex flex-col items-center justify-center relative min-h-[160px] sm:min-h-[190px]">
+                    <img id="modalImage" src="" alt="Item Preview" referrerpolicy="no-referrer" class="max-h-44 sm:max-h-56 max-w-full object-contain rounded shadow-lg">
+                    <span id="modalCategoryTag" class="mt-3 text-[9px] sm:text-[10px] font-d2Mono tracking-widest text-destiny-accent border border-destiny-accent/30 bg-destiny-accent/10 px-2.5 py-0.5 rounded uppercase">
+                        EMBLEM
+                    </span>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex flex-col gap-2">
-                    <!-- Direct Bungie Link Button -->
-                    <a id="modalBungieBtn" href="#" target="_blank" rel="noopener noreferrer" 
-                       class="w-full py-2.5 bg-gradient-to-r from-yellow-600 to-destiny-accent hover:from-yellow-500 hover:to-yellow-300 text-black font-d2Hud font-bold text-sm tracking-widest rounded flex items-center justify-center gap-2 transition shadow-lg shadow-yellow-500/10">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        <span>REDEEM ON BUNGIE.NET</span>
-                    </a>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <button id="modalCopyBtn" class="py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-d2Hud font-semibold text-xs tracking-wider rounded transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-copy"></i>
-                            <span>COPY CODE</span>
-                        </button>
+                <!-- Item Details & Actions Bottom Container -->
+                <div class="p-4 sm:p-6 flex flex-col space-y-3 sm:space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <span id="modalRarityText" class="text-[11px] sm:text-xs font-bold tracking-widest uppercase text-destiny-accent">EXOTIC</span>
+                        </div>
+                        <h2 id="modalTitle" class="text-xl sm:text-2xl font-d2Header text-white uppercase tracking-wider leading-snug break-words">ITEM NAME</h2>
+                        <p id="modalNote" class="text-xs text-destiny-textDim font-d2Hud italic mt-0.5">Source / Note info</p>
                         
-                        <button id="modalToggleClaimBtn" class="py-2 bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 font-d2Hud font-semibold text-xs tracking-wider rounded transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-check"></i>
-                            <span id="modalToggleClaimText">MARK CLAIMED</span>
-                        </button>
+                        <div class="my-3 border-t border-white/10 pt-3">
+                            <span class="text-[10px] font-d2Hud text-destiny-textDim uppercase tracking-wider block mb-1">REDEEMABLE TOKEN CODE</span>
+                            <div class="bg-black/80 border border-white/20 p-2 sm:p-2.5 rounded font-d2Mono text-lg sm:text-xl font-bold text-center tracking-widest text-yellow-400 select-all flex items-center justify-center gap-2">
+                                <span id="modalCode">XXX-XXX-XXX</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons with Mobile-Friendly Touch Targets -->
+                    <div class="flex flex-col gap-2 pt-1 pb-2">
+                        <!-- Direct Bungie Link Button -->
+                        <a id="modalBungieBtn" href="#" target="_blank" rel="noopener noreferrer" 
+                           class="w-full py-3 sm:py-2.5 bg-gradient-to-r from-yellow-600 to-destiny-accent hover:from-yellow-500 hover:to-yellow-300 text-black font-d2Hud font-bold text-sm tracking-widest rounded flex items-center justify-center gap-2 transition shadow-lg shadow-yellow-500/10 active:scale-[0.98]">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <span>REDEEM ON BUNGIE.NET</span>
+                        </a>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="modalCopyBtn" class="py-3 sm:py-2.5 bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/20 text-white font-d2Hud font-semibold text-xs tracking-wider rounded transition flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>COPY CODE</span>
+                            </button>
+                            
+                            <button id="modalToggleClaimBtn" class="py-3 sm:py-2.5 bg-emerald-950/40 hover:bg-emerald-900/60 active:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-d2Hud font-semibold text-xs tracking-wider rounded transition flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                                <i class="fa-solid fa-check"></i>
+                                <span id="modalToggleClaimText">MARK CLAIMED</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FLOATING TOOLTIP FOR GRID HOVER -->
-    <div id="hoverTooltip" class="fixed pointer-events-none z-50 opacity-0 transition-opacity duration-150 bg-destiny-panel/95 border border-white/20 p-3 rounded shadow-2xl max-w-xs hud-bracket backdrop-blur">
+    <!-- FLOATING TOOLTIP FOR DESKTOP HOVER -->
+    <div id="hoverTooltip" class="fixed pointer-events-none z-50 opacity-0 transition-opacity duration-150 bg-destiny-panel/95 border border-white/20 p-3 rounded shadow-2xl max-w-xs hud-bracket backdrop-blur hidden sm:block">
         <div id="tooltipRarity" class="text-[10px] font-bold tracking-widest uppercase text-destiny-accent">LEGENDARY</div>
         <div id="tooltipTitle" class="text-sm font-d2Header text-white uppercase font-bold">ITEM NAME</div>
         <div id="tooltipNote" class="text-[11px] text-destiny-textDim font-d2Hud mt-1">Note text here</div>
@@ -513,14 +535,14 @@
 
                 const isActive = activeCategory === cat;
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 text-xs font-d2Hud uppercase tracking-widest transition flex items-center gap-2 border-b-2 whitespace-nowrap ${
+                btn.className = `px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-d2Hud uppercase tracking-wider sm:tracking-widest transition flex items-center gap-1.5 sm:gap-2 border-b-2 whitespace-nowrap shrink-0 active:scale-95 ${
                     isActive 
                         ? 'border-destiny-accent text-white font-bold bg-white/5' 
                         : 'border-transparent text-destiny-textDim hover:text-white hover:border-white/30'
                 }`;
                 btn.innerHTML = `
                     <span>${cat}</span>
-                    <span class="px-1.5 py-0.2 text-[10px] rounded font-d2Mono ${isActive ? 'bg-destiny-accent text-black font-bold' : 'bg-white/10 text-white/70'}">${count}</span>
+                    <span class="px-1.5 py-0.2 text-[9px] sm:text-[10px] rounded font-d2Mono ${isActive ? 'bg-destiny-accent text-black font-bold' : 'bg-white/10 text-white/70'}">${count}</span>
                 `;
                 btn.onclick = () => {
                     activeCategory = cat;
@@ -569,7 +591,7 @@
                 const isEmblem = item.category === 'Emblems';
 
                 const card = document.createElement('div');
-                card.className = `d2-node bg-destiny-panel/90 border border-white/10 rounded overflow-hidden flex flex-col justify-between group ${isClaimed ? 'opacity-50 grayscale hover:grayscale-0' : ''}`;
+                card.className = `d2-node bg-destiny-panel/90 border border-white/10 rounded overflow-hidden flex flex-col justify-between group ${isClaimed ? 'opacity-55 grayscale-[70%] hover:grayscale-0' : ''}`;
                 
                 // Card Rarity Bar
                 const rarityBar = document.createElement('div');
@@ -578,7 +600,7 @@
 
                 // Preview Box (Clickable)
                 const previewBox = document.createElement('div');
-                previewBox.className = "p-3 flex-1 flex flex-col items-center justify-center relative cursor-pointer";
+                previewBox.className = "p-3 flex-1 flex flex-col items-center justify-center relative cursor-pointer active:bg-white/5 transition-colors";
                 previewBox.onclick = () => openInspectModal(item.code);
 
                 if (isClaimed) {
@@ -594,11 +616,12 @@
                 previewBox.appendChild(categoryTag);
 
                 const imageFrame = document.createElement('div');
-                imageFrame.className = `w-full flex items-center justify-center my-2 ${isEmblem ? 'h-16' : 'h-28'} overflow-hidden rounded bg-black/50 border border-white/5 p-1 relative`;
+                imageFrame.className = `w-full flex items-center justify-center my-2 ${isEmblem ? 'h-16' : 'h-24 sm:h-28'} overflow-hidden rounded bg-black/50 border border-white/5 p-1 relative`;
 
                 const img = document.createElement('img');
                 img.src = normalizeImageUrl(item.image);
                 img.alt = item.name;
+                img.loading = "lazy";
                 img.setAttribute('referrerpolicy', 'no-referrer');
                 img.className = "max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300";
                 img.onerror = function() {
@@ -612,28 +635,29 @@
                 const titleBox = document.createElement('div');
                 titleBox.className = "w-full text-center mt-1";
                 titleBox.innerHTML = `
-                    <h3 class="text-sm font-d2Header text-white uppercase tracking-wider line-clamp-1 group-hover:text-destiny-accent transition-colors">${item.name}</h3>
-                    <p class="text-[11px] text-destiny-textDim font-d2Hud line-clamp-1">${item.note}</p>
+                    <h3 class="text-xs sm:text-sm font-d2Header text-white uppercase tracking-wider line-clamp-1 group-hover:text-destiny-accent transition-colors font-bold">${item.name}</h3>
+                    <p class="text-[10px] sm:text-[11px] text-destiny-textDim font-d2Hud line-clamp-1">${item.note}</p>
                 `;
                 previewBox.appendChild(titleBox);
                 card.appendChild(previewBox);
 
-                // Card Footer Actions
+                // Card Footer Actions with Mobile Sizing
                 const footer = document.createElement('div');
-                footer.className = "bg-black/60 border-t border-white/10 p-2 flex items-center gap-1.5 font-d2Hud";
+                footer.className = "bg-black/70 border-t border-white/10 p-2 flex items-center gap-2 font-d2Hud";
 
                 const redeemBtn = document.createElement('a');
                 redeemBtn.href = bungieUrl;
                 redeemBtn.target = "_blank";
                 redeemBtn.rel = "noopener noreferrer";
                 redeemBtn.title = "Redeem on Bungie.net";
-                redeemBtn.className = "flex-1 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 hover:border-yellow-500/60 text-yellow-400 font-bold text-xs tracking-wider rounded text-center transition flex items-center justify-center gap-1";
+                redeemBtn.className = "flex-1 py-2 sm:py-1.5 bg-yellow-500/15 hover:bg-yellow-500/25 active:bg-yellow-500/35 border border-yellow-500/40 text-yellow-400 font-bold text-xs tracking-wider rounded text-center transition flex items-center justify-center gap-1.5 active:scale-95";
                 redeemBtn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i><span>REDEEM</span>';
                 redeemBtn.onclick = (e) => e.stopPropagation();
 
                 const copyBtn = document.createElement('button');
-                copyBtn.title = "Copy Code to Clipboard";
-                copyBtn.className = "px-2.5 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-white text-xs rounded transition";
+                copyBtn.title = "Copy Code";
+                copyBtn.ariaLabel = "Copy Code";
+                copyBtn.className = "w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 bg-white/5 hover:bg-white/15 active:bg-white/20 border border-white/10 text-white text-xs rounded transition flex items-center justify-center shrink-0 active:scale-90";
                 copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i>';
                 copyBtn.onclick = (e) => {
                     e.stopPropagation();
@@ -642,8 +666,9 @@
 
                 const toggleBtn = document.createElement('button');
                 toggleBtn.title = isClaimed ? 'Mark Unclaimed' : 'Mark Claimed';
-                toggleBtn.className = `px-2.5 py-1.5 ${isClaimed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white'} text-xs rounded transition`;
-                toggleBtn.innerHTML = `<i class="fa-solid ${isClaimed ? 'fa-circle-check' : 'fa-circle'}"></i>`;
+                toggleBtn.ariaLabel = toggleBtn.title;
+                toggleBtn.className = `w-9 h-9 sm:w-auto sm:px-2.5 sm:py-1.5 ${isClaimed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white'} text-xs rounded transition flex items-center justify-center shrink-0 active:scale-90`;
+                toggleBtn.innerHTML = `<i class="fa-solid ${isClaimed ? 'fa-circle-check text-emerald-400' : 'fa-circle'}"></i>`;
                 toggleBtn.onclick = (e) => {
                     e.stopPropagation();
                     toggleClaimState(item.code);
@@ -654,10 +679,12 @@
                 footer.appendChild(toggleBtn);
                 card.appendChild(footer);
 
-                // Hover Tooltip
-                card.addEventListener('mouseenter', (e) => showTooltip(e, item));
-                card.addEventListener('mousemove', (e) => moveTooltip(e));
-                card.addEventListener('mouseleave', () => hideTooltip());
+                // Desktop Hover Tooltip only (prevents sticky hover bug on touch screens)
+                if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                    card.addEventListener('mouseenter', (e) => showTooltip(e, item));
+                    card.addEventListener('mousemove', (e) => moveTooltip(e));
+                    card.addEventListener('mouseleave', () => hideTooltip());
+                }
 
                 grid.appendChild(card);
             });
@@ -690,24 +717,35 @@
 
         // COPY CODE HELPER
         function copyCode(code) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showToast(`CODE ${code} COPIED`);
+                }).catch(() => fallbackCopy(code));
+            } else {
+                fallbackCopy(code);
+            }
+        }
+
+        function fallbackCopy(code) {
             const textarea = document.createElement('textarea');
             textarea.value = code;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-
-            showToast(`CODE ${code} COPIED TO CLIPBOARD`);
+            showToast(`CODE ${code} COPIED`);
         }
 
         // TOGGLE CLAIM STATE
         function toggleClaimState(code) {
             if (claimedCodes.has(code)) {
                 claimedCodes.delete(code);
-                showToast(`CODE ${code} MARKED UNCLAIMED`);
+                showToast(`MARKED UNCLAIMED`);
             } else {
                 claimedCodes.add(code);
-                showToast(`CODE ${code} MARKED CLAIMED`);
+                showToast(`MARKED CLAIMED`);
             }
             saveClaimedState();
             renderGrid();
@@ -717,17 +755,18 @@
             }
         }
 
-        // TOAST NOTIFICATION SYSTEM
+        // TOAST NOTIFICATION SYSTEM (RESPONSIVE FOR MOBILE)
         function showToast(message) {
             const existing = document.getElementById('d2Toast');
             if (existing) existing.remove();
 
             const toast = document.createElement('div');
             toast.id = 'd2Toast';
-            toast.className = 'fixed bottom-6 right-6 z-50 bg-destiny-panel border border-destiny-accent px-4 py-3 rounded shadow-2xl flex items-center gap-3 font-d2Hud text-xs tracking-wider text-white hud-bracket transition-all transform translate-y-4 opacity-0';
+            // Positioned bottom-20 on mobile to not collide with floating Ko-Fi chat widget
+            toast.className = 'fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 z-50 bg-destiny-panel/95 border border-destiny-accent px-4 py-2.5 rounded shadow-2xl flex items-center gap-2.5 font-d2Hud text-xs tracking-wider text-white hud-bracket transition-all transform translate-y-4 opacity-0 backdrop-blur whitespace-nowrap';
             toast.innerHTML = `
-                <i class="fa-solid fa-square-check text-destiny-accent text-base"></i>
-                <span>${message}</span>
+                <i class="fa-solid fa-square-check text-destiny-accent text-sm"></i>
+                <span class="font-bold">${message}</span>
             `;
             document.body.appendChild(toast);
 
@@ -737,8 +776,8 @@
 
             setTimeout(() => {
                 toast.classList.add('translate-y-4', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
+                setTimeout(() => toast.remove(), 250);
+            }, 2200);
         }
 
         // INSPECTION MODAL HANDLERS
@@ -779,7 +818,8 @@
             const modal = document.getElementById('inspectModal');
             const container = document.getElementById('modalContainer');
             modal.classList.remove('opacity-0', 'pointer-events-none');
-            container.classList.remove('scale-95');
+            container.classList.remove('translate-y-8', 'sm:scale-95');
+            document.body.classList.add('overflow-hidden');
         }
 
         function updateModalClaimBtn() {
@@ -793,7 +833,8 @@
             const modal = document.getElementById('inspectModal');
             const container = document.getElementById('modalContainer');
             modal.classList.add('opacity-0', 'pointer-events-none');
-            container.classList.add('scale-95');
+            container.classList.add('translate-y-8', 'sm:scale-95');
+            document.body.classList.remove('overflow-hidden');
             activeInspectItem = null;
         }
 
@@ -803,13 +844,18 @@
             renderGrid();
             updateProgressStats();
 
-            // Clock
-            setInterval(() => {
+            // Clock update
+            const updateClock = () => {
                 const now = new Date();
-                document.getElementById('systemClock').innerText = now.toISOString().replace('T', ' - ').substring(0, 22) + ' EDT';
-            }, 1000);
+                const clockEl = document.getElementById('systemClock');
+                if (clockEl) {
+                    clockEl.innerText = now.toISOString().replace('T', ' - ').substring(0, 19) + ' UTC';
+                }
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
 
-            // Search input
+            // Search input handlers
             const searchInput = document.getElementById('searchInput');
             const clearBtn = document.getElementById('clearSearchBtn');
             
@@ -826,6 +872,7 @@
                 searchInput.value = '';
                 clearBtn.classList.add('hidden');
                 renderGrid();
+                searchInput.focus();
             });
 
             // Hide Claimed Toggle
@@ -835,11 +882,11 @@
 
             // Reset States
             document.getElementById('resetAllBtn').addEventListener('click', () => {
-                if (window.confirm('Are you sure you want to reset all claimed code states?')) {
+                if (window.confirm('Reset all claimed code states to default?')) {
                     claimedCodes.clear();
                     saveClaimedState();
                     renderGrid();
-                    showToast('ALL CODE STATES RESET TO UNCLAIMED');
+                    showToast('ALL NODES RESET');
                 }
             });
 
